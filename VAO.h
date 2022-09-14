@@ -14,7 +14,7 @@ public:
 	void Generate();
 	void Regenerate();
 	// Links a VBO to the VAO using a certain layout
-	void LinkVBO(VBO& VBO, GLuint layout, GLfloat* vertices);
+	void LinkVBO(VBO& VBO, GLuint layout, GLfloat* vertices, size_t length);
 	// Binds the VAO
 	void Bind();
 	// Unbinds the VAO

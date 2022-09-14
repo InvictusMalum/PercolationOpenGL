@@ -6,14 +6,14 @@ EBO::EBO()
 	
 }
 
-void EBO::Generate(GLuint* indices, GLsizeiptr size)
+void EBO::Generate(GLuint* indices, size_t size)
 {
 	glGenBuffers(1, &ID);
 	glBindBuffer(GL_ELEMENT_ARRAY_BUFFER, ID);
 	glBufferData(GL_ELEMENT_ARRAY_BUFFER, size, indices, GL_STATIC_DRAW);
 }
 
-void EBO::Regenerate(GLuint* indices, GLsizeiptr size)
+void EBO::Regenerate(GLuint* indices, size_t size)
 {
 	glBindBuffer(GL_ELEMENT_ARRAY_BUFFER, ID);
 	glBufferData(GL_ELEMENT_ARRAY_BUFFER, size, indices, GL_STATIC_DRAW);

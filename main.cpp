@@ -9,10 +9,12 @@
 #include"EBO.h"
 #include"VAO.h"
 #include"VBO.h"
+#include"EBO.h"
 
 Shader shaderProgram;
 VBO VBO;
 VAO VAO;
+EBO EBO;
 
 void framebuffer_size_callback(GLFWwindow* window, int width, int height);
 void processInput(GLFWwindow *window);
@@ -20,6 +22,9 @@ void processInput(GLFWwindow *window);
 // settings
 const unsigned int SCR_WIDTH = 800;
 const unsigned int SCR_HEIGHT = 800;
+
+const unsigned int WIDTH_PIXELS = 2;
+const unsigned int HEIGHT_PIXELS = 2;
 
 const char *vertexShaderSource = "#version 330 core\n"
     "layout (location = 0) in vec3 aPos;\n"
@@ -47,54 +52,28 @@ int main()
         return -1;
     }
 
-
-    // // build and compile our shader program
-    // // ------------------------------------
-    // // vertex shader
-    // unsigned int vertexShader = glCreateShader(GL_VERTEX_SHADER);
-    // glShaderSource(vertexShader, 1, &vertexShaderSource, NULL);
-    // glCompileShader(vertexShader);
-    // // check for shader compile errors
-    // int success;
-    // char infoLog[512];
-    // glGetShaderiv(vertexShader, GL_COMPILE_STATUS, &success);
-    // if (!success)
-    // {
-    //     glGetShaderInfoLog(vertexShader, 512, NULL, infoLog);
-    //     std::cout << "ERROR::SHADER::VERTEX::COMPILATION_FAILED\n" << infoLog << std::endl;
-    // }
-    // // fragment shader
-    // unsigned int fragmentShader = glCreateShader(GL_FRAGMENT_SHADER);
-    // glShaderSource(fragmentShader, 1, &fragmentShaderSource, NULL);
-    // glCompileShader(fragmentShader);
-    // // check for shader compile errors
-    // glGetShaderiv(fragmentShader, GL_COMPILE_STATUS, &success);
-    // if (!success)
-    // {
-    //     glGetShaderInfoLog(fragmentShader, 512, NULL, infoLog);
-    //     std::cout << "ERROR::SHADER::FRAGMENT::COMPILATION_FAILED\n" << infoLog << std::endl;
-    // }
-    // // link shaders
-    // unsigned int shaderProgram = glCreateProgram();
-    // glAttachShader(shaderProgram, vertexShader);
-    // glAttachShader(shaderProgram, fragmentShader);
-    // glLinkProgram(shaderProgram);
-    // // check for linking errors
-    // glGetProgramiv(shaderProgram, GL_LINK_STATUS, &success);
-    // if (!success) {
-    //     glGetProgramInfoLog(shaderProgram, 512, NULL, infoLog);
-    //     std::cout << "ERROR::SHADER::PROGRAM::LINKING_FAILED\n" << infoLog << std::endl;
-    // }
-    // glDeleteShader(vertexShader);
-    // glDeleteShader(fragmentShader);
-
     // set up vertex data (and buffer(s)) and configure vertex attributes
     // ------------------------------------------------------------------
-    float vertices[] = {
-        -0.5f, -0.5f, 0.0f, // left  
-         0.5f, -0.5f, 0.0f, // right 
-         0.0f,  0.5f, 0.0f  // top   
-    }; 
+    GLfloat vertices[(WIDTH_PIXELS+1) * (HEIGHT_PIXELS+1) * 3];
+
+    for (int i = 0; i <= HEIGHT_PIXELS; i++)
+	{
+		for (int j = 0; j <= WIDTH_PIXELS; j++)
+		{
+			*(vertices + ((int64_t)i * WIDTH_PIXELS + j) * 3) = (GLfloat)(j) / (WIDTH_PIXELS) * 2 - 1;
+			*(vertices + ((int64_t)i * WIDTH_PIXELS + j) * 3 + 1) = -((GLfloat)(i) / (HEIGHT_PIXELS) * 2 - 1);
+			*(vertices + ((int64_t)i * WIDTH_PIXELS + j) * 3 + 2) = 0;
+		}
+	}
+    
+    GLuint* indices;
+    indices = new GLuint[(WIDTH_PIXELS+1) * (HEIGHT_PIXELS+1)];
+    for (int x = 0; x < (WIDTH_PIXELS+1) * (HEIGHT_PIXELS+1); x++) {
+        *(indices + x) = (GLuint)x;
+    }
+
+    //void DrawingData::Generate(VBO VBO, const char* vertShader, const char* fragShader, int sizeMult)
+    //sizeMult is for EBO 
 
     // Generates Vertex Buffer Object and links it to vertices
 	shaderProgram.Generate("default.txt", "black.txt");
@@ -102,39 +81,14 @@ int main()
     VAO.Generate();
     VBO.Generate();
 
-    VAO.Bind(); 
-    VAO.LinkVBO(VBO, 0, vertices);
+    VAO.Bind();
     
+    EBO.Generate(indices, 27);
+    VAO.LinkVBO(VBO, 0, vertices, 27);
+
     VAO.Unbind();
-	VBO.Unbind();
+	EBO.Unbind();
 
-    
-
-    // unsigned int VBO, VAO;
-    // glGenVertexArrays(1, &VAO);
-    // glGenBuffers(1, &VBO);
-    // // bind the Vertex Array Object first, then bind and set vertex buffer(s), and then configure vertex attributes(s).
-    // glBindVertexArray(VAO);
-
-    // glBindBuffer(GL_ARRAY_BUFFER, VBO);
-    // glBufferData(GL_ARRAY_BUFFER, sizeof(vertices), vertices, GL_STATIC_DRAW);
-
-    // glVertexAttribPointer(0, 3, GL_FLOAT, GL_FALSE, 3 * sizeof(float), (void*)0);
-    // glEnableVertexAttribArray(0);
-
-    // note that this is allowed, the call to glVertexAttribPointer registered VBO as the vertex attribute's bound vertex buffer object so afterwards we can safely unbind
-    // glBindBuffer(GL_ARRAY_BUFFER, 0); 
-
-    // You can unbind the VAO afterwards so other VAO calls won't accidentally modify this VAO, but this rarely happens. Modifying other
-    // VAOs requires a call to glBindVertexArray anyways so we generally don't unbind VAOs (nor VBOs) when it's not directly necessary.
-    // glBindVertexArray(0); 
-
-
-    // // uncomment this call to draw in wireframe polygons.
-    // glPolygonMode(GL_FRONT_AND_BACK, GL_LINE);
-
-    // render loop
-    // -----------
     while (!glfwWindowShouldClose(window))
     {
         // input
@@ -143,14 +97,17 @@ int main()
 
         // render
         // ------
-        glClearColor(0.0f, 0.0f, 0.3f, 1.0f);
+        glClearColor(0.2f, 0.3f, 0.3f, 1.0f);
         glClear(GL_COLOR_BUFFER_BIT);
 
         // draw our first triangle
         shaderProgram.Activate();
         VAO.Bind(); // seeing as we only have a single VAO there's no need to bind it every time, but we'll do so to keep things a bit more organized
-        glDrawArrays(GL_TRIANGLES, 0, 3);
-        glBindVertexArray(0); // no need to unbind it every time 
+        glPointSize(15);
+        glDrawElements(GL_POINTS, 27, GL_UNSIGNED_INT, 0);
+        //glDrawElements(GL_TRIANGLES, 3, GL_UNSIGNED_INT, 0);
+        //glDrawArrays(GL_TRIANGLES, 0, 3);
+        VAO.Unbind(); // no need to unbind it every time 
  
         // glfw: swap buffers and poll IO events (keys pressed/released, mouse moved etc.)
         // -------------------------------------------------------------------------------
@@ -186,31 +143,3 @@ void framebuffer_size_callback(GLFWwindow* window, int width, int height)
     // height will be significantly larger than specified on retina displays.
     glViewport(0, 0, width, height);
 }
-
-// int main()
-// {
-// 	GLFWwindow* window = GLFWClass::StartUp(SCREEN_WIDTH, SCREEN_HEIGHT);
-// 	if (window == NULL)
-// 	{
-// 		return -1;
-// 	}
-
-// 	// Main while loop until window should close
-// 	while (!glfwWindowShouldClose(window))
-// 	{
-// 		glClearColor(1.0f, 1.0f, 1.0f, 1.0f);
-// 		glClear(GL_COLOR_BUFFER_BIT);
-
-// 		// Update Screen
-// 		// Swap back and front buffers
-// 		glfwSwapBuffers(window);
-// 		// Get and process events
-// 		glfwPollEvents();
-
-// 	}
-
-// 	// End program
-// 	glfwDestroyWindow(window);
-// 	glfwTerminate();
-// 	return 0;
-// }

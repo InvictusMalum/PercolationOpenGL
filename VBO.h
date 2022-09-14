@@ -13,7 +13,7 @@ public:
 	void Generate();
 	void Regenerate();
 	// Binds the VBO
-	void Bind(GLfloat* vertices);
+	void Bind(GLfloat* vertices, size_t length);
 	// Unbinds the VBO
 	void Unbind();
 	// Deletes the VBO
