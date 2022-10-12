@@ -60,17 +60,21 @@ int main()
 	{
 		for (int j = 0; j <= WIDTH_PIXELS; j++)
 		{
-			*(vertices + ((int64_t)i * WIDTH_PIXELS + j) * 3) = (GLfloat)(j) / (WIDTH_PIXELS) * 2 - 1;
-			*(vertices + ((int64_t)i * WIDTH_PIXELS + j) * 3 + 1) = -((GLfloat)(i) / (HEIGHT_PIXELS) * 2 - 1);
-			*(vertices + ((int64_t)i * WIDTH_PIXELS + j) * 3 + 2) = 0;
+			*(vertices + ((int64_t)i * (WIDTH_PIXELS+1) + j) * 3) = (GLfloat)(j) / (WIDTH_PIXELS) * 2 - 1;
+			*(vertices + ((int64_t)i * (WIDTH_PIXELS+1) + j) * 3 + 1) = (GLfloat)(i) / (HEIGHT_PIXELS) * 2 - 1;
+			*(vertices + ((int64_t)i * (WIDTH_PIXELS+1) + j) * 3 + 2) = 0;
 		}
 	}
+    for (int i = 0; i < 9; i++) {
+        std::cout << vertices[i*3] << " " << vertices[i*3+1] << " "<< vertices[i*3+2] << "\n";
+    }
     
     GLuint* indices;
     indices = new GLuint[(WIDTH_PIXELS+1) * (HEIGHT_PIXELS+1)];
     for (int x = 0; x < (WIDTH_PIXELS+1) * (HEIGHT_PIXELS+1); x++) {
         *(indices + x) = (GLuint)x;
     }
+
 
     //void DrawingData::Generate(VBO VBO, const char* vertShader, const char* fragShader, int sizeMult)
     //sizeMult is for EBO 
@@ -83,7 +87,7 @@ int main()
 
     VAO.Bind();
     
-    EBO.Generate(indices, 27);
+    EBO.Generate(indices, 9*sizeof(GLuint));
     VAO.LinkVBO(VBO, 0, vertices, 27);
 
     VAO.Unbind();
@@ -104,7 +108,7 @@ int main()
         shaderProgram.Activate();
         VAO.Bind(); // seeing as we only have a single VAO there's no need to bind it every time, but we'll do so to keep things a bit more organized
         glPointSize(15);
-        glDrawElements(GL_POINTS, 27, GL_UNSIGNED_INT, 0);
+        glDrawElements(GL_POINTS, 9, GL_UNSIGNED_INT, 0);
         //glDrawElements(GL_TRIANGLES, 3, GL_UNSIGNED_INT, 0);
         //glDrawArrays(GL_TRIANGLES, 0, 3);
         VAO.Unbind(); // no need to unbind it every time 
