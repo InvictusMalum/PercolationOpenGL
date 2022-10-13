@@ -22,7 +22,7 @@ void VBO::Regenerate()
 void VBO::Bind(GLfloat* vertices, size_t length)
 {
 	glBindBuffer(GL_ARRAY_BUFFER, ID);
-	glBufferData(GL_ARRAY_BUFFER, sizeof(GLfloat)*length*9, vertices, GL_STATIC_DRAW);
+	glBufferData(GL_ARRAY_BUFFER, sizeof(GLfloat)*length, vertices, GL_STATIC_DRAW);
 }
 
 // Unbinds the VBO

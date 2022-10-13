@@ -23,8 +23,8 @@ void processInput(GLFWwindow *window);
 const unsigned int SCR_WIDTH = 800;
 const unsigned int SCR_HEIGHT = 800;
 
-const unsigned int WIDTH_PIXELS = 2;
-const unsigned int HEIGHT_PIXELS = 2;
+const unsigned int WIDTH_PIXELS = 99;
+const unsigned int HEIGHT_PIXELS = 99;
 
 const char *vertexShaderSource = "#version 330 core\n"
     "layout (location = 0) in vec3 aPos;\n"
@@ -65,15 +65,21 @@ int main()
 			*(vertices + ((int64_t)i * (WIDTH_PIXELS+1) + j) * 3 + 2) = 0;
 		}
 	}
-    for (int i = 0; i < 9; i++) {
-        std::cout << vertices[i*3] << " " << vertices[i*3+1] << " "<< vertices[i*3+2] << "\n";
-    }
     
-    GLuint* indices;
-    indices = new GLuint[(WIDTH_PIXELS+1) * (HEIGHT_PIXELS+1)];
-    for (int x = 0; x < (WIDTH_PIXELS+1) * (HEIGHT_PIXELS+1); x++) {
-        *(indices + x) = (GLuint)x;
-    }
+    GLuint indices[(WIDTH_PIXELS) * (HEIGHT_PIXELS)*6];
+    for (int i = 0; i < HEIGHT_PIXELS; i++)
+	{
+		for (int j = 0; j < WIDTH_PIXELS; j++)
+		{
+			*(indices + ((int64_t)i * WIDTH_PIXELS + j) * 6 + 0) = (i*(WIDTH_PIXELS+1) + j)*3;
+			*(indices + ((int64_t)i * WIDTH_PIXELS + j) * 6 + 1) = (i*(WIDTH_PIXELS+1) + j + 1)*3;
+			*(indices + ((int64_t)i * WIDTH_PIXELS + j) * 6 + 2) = (i*(WIDTH_PIXELS+1) + j + 1 + (WIDTH_PIXELS+1))*3;
+
+            *(indices + ((int64_t)i * WIDTH_PIXELS + j) * 6 + 3) = (i*(WIDTH_PIXELS+1) + j)*3;
+			*(indices + ((int64_t)i * WIDTH_PIXELS + j) * 6 + 4) = (i*(WIDTH_PIXELS+1) + j + 1 + (WIDTH_PIXELS+1))*3;
+			*(indices + ((int64_t)i * WIDTH_PIXELS + j) * 6 + 5) = (i*(WIDTH_PIXELS+1) + j + (WIDTH_PIXELS+1))*3;
+		}
+	}
 
 
     //void DrawingData::Generate(VBO VBO, const char* vertShader, const char* fragShader, int sizeMult)
@@ -87,8 +93,10 @@ int main()
 
     VAO.Bind();
     
-    EBO.Generate(indices, 9*sizeof(GLuint));
-    VAO.LinkVBO(VBO, 0, vertices, 27);
+    std::cout << sizeof(indices)/sizeof(GLuint);
+
+    EBO.Generate(indices, sizeof(indices)/sizeof(GLuint));
+    VAO.LinkVBO(VBO, 0, vertices, sizeof(vertices)/sizeof(GLfloat));
 
     VAO.Unbind();
 	EBO.Unbind();
@@ -107,8 +115,8 @@ int main()
         // draw our first triangle
         shaderProgram.Activate();
         VAO.Bind(); // seeing as we only have a single VAO there's no need to bind it every time, but we'll do so to keep things a bit more organized
-        glPointSize(15);
-        glDrawElements(GL_POINTS, 9, GL_UNSIGNED_INT, 0);
+        glPointSize(2);
+        glDrawElements(GL_TRIANGLES, sizeof(indices)/sizeof(GLfloat), GL_UNSIGNED_INT, 0);
         //glDrawElements(GL_TRIANGLES, 3, GL_UNSIGNED_INT, 0);
         //glDrawArrays(GL_TRIANGLES, 0, 3);
         VAO.Unbind(); // no need to unbind it every time 
