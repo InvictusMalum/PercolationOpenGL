@@ -26,6 +26,8 @@ const unsigned int SCR_HEIGHT = 800;
 const unsigned int WIDTH_PIXELS = 99;
 const unsigned int HEIGHT_PIXELS = 99;
 
+//https://stackoverflow.com/questions/63616715/opengl-draw-points-with-different-colors-vertex-location-and-vertex-color-in-di
+
 const char *vertexShaderSource = "#version 330 core\n"
     "layout (location = 0) in vec3 aPos;\n"
     "void main()\n"
