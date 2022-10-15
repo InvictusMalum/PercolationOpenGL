@@ -19,7 +19,7 @@ void VBO::Regenerate()
 }
 
 // Binds the VBO
-void VBO::Bind(GLfloat* vertices, size_t length)
+void VBO::Bind(GLfloat* vertices, int length)
 {
 	glBindBuffer(GL_ARRAY_BUFFER, ID);
 	glBufferData(GL_ARRAY_BUFFER, sizeof(GLfloat)*length, vertices, GL_STATIC_DRAW);

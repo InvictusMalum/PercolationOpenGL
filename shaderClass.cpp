@@ -1,34 +1,20 @@
 #include"shaderClass.h"
 
-const char *vertexSource = "#version 330 core\n"
-	"layout (location = 0) in vec3 aPos;\n"
-	"void main()\n"
-	"{\n"
-	"   gl_Position = vec4(aPos.x, aPos.y, aPos.z, 1.0);\n"
-	"}\0";
-const char *fragmentSource = "#version 330 core\n"
-	"out vec4 FragColor;\n"
-	"void main()\n"
-	"{\n"
-	"   FragColor = vec4(0.0f, 0.5f, 0.2f, 1.0f);\n"
-	"}\n\0";
+std::string Shader::get_file_contents(const char* filename) {
+	std::string stringOut;
 
-
-// Reads a text file and outputs a string with everything in the text file
-std::string get_file_contents(const char* filename)
-{
-	std::ifstream in(filename, std::ios::binary);
-	if (in)
+	std::string line;
+	std::ifstream file(filename);
+	if (file.is_open())
 	{
-		std::string contents;
-		in.seekg(0, std::ios::end);
-		contents.resize(in.tellg());
-		in.seekg(0, std::ios::beg);
-		in.read(&contents[0], contents.size());
-		in.close();
-		return(contents);
+		while ( getline (file,line) )
+		{
+			stringOut += line + '\n';
+		}
+		file.close();
 	}
-	throw(errno);
+	else std::cout <<"Unable to open file";
+	return stringOut;
 }
 
 // Constructor that build the Shader Program from 2 different shaders
@@ -38,13 +24,13 @@ Shader::Shader()
 }
 
 void Shader::Generate(const char* vertexFile, const char* fragmentFile) {
-	// // Read vertexFile and fragmentFile and store the strings
-	// std::string vertexCode = get_file_contents(vertexFile);
-	// std::string fragmentCode = get_file_contents(fragmentFile);
-	
-	// // Convert the shader source strings into character arrays
-	// const char* vertexSource = vertexCode.c_str();
-	// const char* fragmentSource = fragmentCode.c_str();
+	// create strings to store the code
+	std::string vertexCode = get_file_contents(vertexFile);
+	std::string fragmentCode = get_file_contents(fragmentFile);
+
+	// Convert the shader source strings into character arrays
+	vertexSource = vertexCode.c_str();
+	fragmentSource = fragmentCode.c_str();
 
 	// Create Vertex Shader Object and get its reference
 	GLuint vertexShader = glCreateShader(GL_VERTEX_SHADER);
@@ -74,13 +60,13 @@ void Shader::Generate(const char* vertexFile, const char* fragmentFile) {
 }// Activates the Shader Program
 
 void Shader::Regenerate(const char* vertexFile, const char* fragmentFile) {
-	// Read vertexFile and fragmentFile and store the strings
-	std::string vertexCode = get_file_contents(vertexFile);
-	std::string fragmentCode = get_file_contents(fragmentFile);
+	// // Read vertexFile and fragmentFile and store the strings
+	// std::string vertexCode = get_file_contents(vertexFile);
+	// std::string fragmentCode = get_file_contents(fragmentFile);
 
-	// Convert the shader source strings into character arrays
-	const char* vertexSource = vertexCode.c_str();
-	const char* fragmentSource = fragmentCode.c_str();
+	// // Convert the shader source strings into character arrays
+	// const char* vertexSource = vertexCode.c_str();
+	// const char* fragmentSource = fragmentCode.c_str();
 
 	// Create Vertex Shader Object and get its reference
 	GLuint vertexShader = glCreateShader(GL_VERTEX_SHADER);

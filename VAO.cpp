@@ -23,7 +23,7 @@ void VAO::Bind()
 }
 
 // Links a VBO to the VAO using a certain layout
-void VAO::LinkVBO(VBO& VBO, GLuint layout, GLfloat* vertices, size_t length)
+void VAO::LinkVBO(VBO& VBO, GLuint layout, GLfloat* vertices, int length)
 {
 	VBO.Bind(vertices, length);
 	glVertexAttribPointer(layout, 3, GL_FLOAT, GL_FALSE, sizeof(GLfloat), (void*)0);
