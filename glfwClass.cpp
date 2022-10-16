@@ -18,7 +18,7 @@ GLFWwindow* GLFWClass::StartUp(int SCREEN_WIDTH, int SCREEN_HEIGHT) {
     #endif
 
 	// Create a GLFW window, width SCREEN_WIDTH, height SCREEN_HEIGHT, named "OpenGLTest"
-	GLFWwindow* window = glfwCreateWindow(SCREEN_WIDTH, SCREEN_HEIGHT, "OpenGLTest", NULL, NULL);
+	GLFWwindow* window = glfwCreateWindow(SCREEN_WIDTH, SCREEN_HEIGHT, "Percolation Simulation", NULL, NULL);
 	// If window fails to be created
 	if (window == NULL)
 	{

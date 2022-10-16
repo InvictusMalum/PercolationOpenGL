@@ -168,20 +168,18 @@ void Render(GLFWwindow* window) {
     liquidVAO.Unbind();
     liquidEBO.Unbind();
 
-    glClearColor(0.2f, 0.4f, 0.2f, 1.0f);
+    glClearColor(0.15f, 0.2f, 0.1f, 1.0f);
     glClear(GL_COLOR_BUFFER_BIT);
 
     if (renderClosed) {
         closedShader.Activate();
         closedVAO.Bind();
-        glPointSize(2);
         glDrawElements(GL_TRIANGLES, sizeof(closed_indices)/sizeof(GLfloat), GL_UNSIGNED_INT, 0);
         closedVAO.Unbind();
     }
 
     liquidShader.Activate();
     liquidVAO.Bind();
-    glPointSize(2);
     glDrawElements(GL_TRIANGLES, sizeof(liquid_indices)/sizeof(GLfloat), GL_UNSIGNED_INT, 0);
     liquidVAO.Unbind();
 
@@ -244,7 +242,7 @@ int main()
             {
                 for (int j = 0; j < WIDTH_PIXELS; j++)
                 {
-                    percentage_values[i][j] = (rand() % 100) / (float)100;
+                    percentage_values[i][j] = (rand() % 1000) / (float)1000;
                 }
             }
             initial = false;
@@ -252,7 +250,7 @@ int main()
             Render(window);
         }
         if (glfwGetKey(window, GLFW_KEY_UP) && p_cool == 0) {
-            p += .01;
+            p += .001;
             if (p > 1) {
                 p = 1;
             }
@@ -260,7 +258,7 @@ int main()
             Render(window);
         }
         if (glfwGetKey(window, GLFW_KEY_DOWN) && p_cool == 0) {
-            p -= .01;
+            p -= .001;
             if (p < 0) {
                 p = 0;
             }
@@ -272,6 +270,7 @@ int main()
             closed_cool = 50000;
             Render(window);
         }
+        processInput(window);
         glfwPollEvents();
     }
     // optional: de-allocate all resources once they've outlived their purpose:
